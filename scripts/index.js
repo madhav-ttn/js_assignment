@@ -1,45 +1,44 @@
 "use strict";
 
-console.log("Welcome to js");
 
-const simpleInterestButton = document.getElementById("simpleInterestCalculator");
-const checkPalindromeButton=document.getElementById("checkPalindrome");
-const inputStringValue=document.getElementById("inputString");
-const radiusInput=document.getElementById("checkArea");
-const checkAreaButton=document.getElementById("areaOfCircle");
+const [simpleInterestButton,checkPalindromeButton,inputStringValue,radiusInput,checkAreaButton]=["#simpleInterestCalculator","#checkPalindrome","#inputString","#checkArea","#areaOfCircle"].map(id=>document.querySelector(id));
+
 
 simpleInterestButton.addEventListener("click", () => {
-    const amount = prompt("Enter Amount:", "");
-    const interestRate = prompt("Enter Interest Rate:", "");
-    const noOfYears = prompt("Enter no of years:", "");
-
-    if (amount && interestRate && noOfYears) {
+    let amount = prompt("Enter Amount:", "");
+    let interestRate = prompt("Enter Interest Rate:", "");
+    let noOfYears = prompt("Enter no of years:", "");
+    amount=parseFloat(amount);
+    interestRate=parseFloat(interestRate);
+    noOfYears=parseFloat(noOfYears);
+    if (isNaN(amount) || isNaN(interestRate) || isNaN(noOfYears)) {
+        alert("Please fill valid inputs.");
+    } else {
         const simpleInterest = (amount * interestRate * noOfYears) / 100;
         alert(`Simple Interest: ${simpleInterest}`);
-    } else {
-        alert("Please fill in all fields.");
     }
 });
 
 
 checkPalindromeButton.addEventListener("click",()=>{
     const inputData=inputStringValue.value;
-    let i=0,j=inputData.length-1;
-    let ans=true;
-    while(i<j){
-        if(inputData[i]!=inputData[j]){
-            ans=false;
-            break;
-        }
-        i++;
-        j--;
-    }    
-    if (ans)alert("The entered String is a palindrome");
+    if(!inputData){
+      alert("String can not be empty");
+      return;
+    }
+    const revString=inputData.split("").reverse().join("");
+    const result=inputData===revString;
+    if (result)alert("The entered String is a palindrome");
     else alert("The entered string is not a palindrome");
 })
 
 checkAreaButton.addEventListener("click",()=>{
-    const inputRadius=radiusInput.value;
+    let inputRadius=radiusInput.value;
+    inputRadius=parseFloat(inputRadius);
+    if(isNaN(inputRadius)){
+        alert("Enter valid input");
+        return;
+    }
     const area=3.14*inputRadius*inputRadius;
     alert(`The area of circle is :${area}`);
 })
@@ -56,16 +55,8 @@ const obj1={
     }
 }
 
-const obj2=Object.assign({},obj1);
 
-obj2.age=23;
-
-obj2.emp_details.location="delhi";
-
-console.log(obj2);
-console.log(obj1);
-
-const obj3=structuredClone(obj1);//do nested cloning
+const obj2=structuredClone(obj1);//do nested cloning
 
 console.log(obj1);
 
@@ -118,63 +109,35 @@ const emp=[{
  filter all employees with salary greater than 5000
  */
 
-const emp_salary_greater_5000=[];
-
+const emp_salary_greater_5000=emp.filter(item=>item.Salary>5000);
 const emp_salary_less_1000_age_greater_20=[];
-for(let i=0;i<emp.length;i++){
-    if(emp[i].Salary>5000){
-        emp_salary_greater_5000.push(emp[i]);
+
+
+emp.forEach((employee)=>{
+    employee.Salary=parseFloat(employee.Salary);
+    employee.Age=parseFloat(employee.Age);
+    if(isNaN(employee.Salary) || isNaN(employee.Age)){
+        return;
     }
-    else if(emp[i].Salary<1000 && emp[i].Age>20){
-        emp[i].Salary=emp[i].Salary+emp[i].Salary*5;
-        emp_salary_less_1000_age_greater_20.push(emp[i]);
+    if(employee.Salary<1000 && employee.Age>20){
+        emp_salary_less_1000_age_greater_20.push(employee);
+        const temp_obj=Object.assign({},employee);
+        temp_obj.Salary+=5*temp_obj.Salary;
+        console.log("salary Increment",temp_obj);
     }
-}
+})
 
-console.log(emp_salary_greater_5000); 
-
-/*
-{Name: 'Madhav', Age: 22, Salary: 15000, DOB: '21-10-2002'}
-1
-: 
-{Name: 'Rishabh', Age: 21, Salary: 20000, DOB: '29-12-2003'}
-2
-: 
-{Name: 'Zubair', Age: 28, Salary: 25000, DOB: '01-10-1996'}
-3
-: 
-{Name: 'Raman', Age: 29, Salary: 55000, DOB: '21-12-1995'}
-length:4
-*/
-
-console.log(emp_salary_less_1000_age_greater_20);
+const group_employees_by_age=emp.reduce((group,employee)=>{
+    const ageGroup=group[employee.Age] || [];
+    ageGroup.push(employee);
+    group[employee.Age]=ageGroup;
+    return group;
+},{})
 
 
-
-/***
-0
-: 
-Age
-: 
-29
-DOB
-: 
-"21-12-1995"
-Name
-: 
-"Raz"
-Salary
-: 
-3000
-[[Prototype]]
-: 
-Object
-length
-: 
-1
-[[Prototype]]
-: 
-Array(0)
+console.log("emp_salary_greater_5000",emp_salary_greater_5000); 
 
 
-*/
+console.log("emp_salary_less_1000_age_greater_20",emp_salary_less_1000_age_greater_20);
+
+console.log("group_by_age",group_employees_by_age);
